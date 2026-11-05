@@ -62,7 +62,7 @@ async function init(sql) {
     })})`;
   }
   // Repair older databases that were created with an empty code list.
-  const currentState = await sql\`SELECT data FROM unisquad_state WHERE id=1\`;
+  const currentState = await sql`SELECT data FROM unisquad_state WHERE id=1`;
   if (currentState.length) {
     const d = currentState[0].data || {};
     if (!Array.isArray(d.subCodes) || d.subCodes.length === 0) {
@@ -71,7 +71,7 @@ async function init(sql) {
         {code:'SQ-4412',isUsed:false,usedBy:null},
         {code:'SQ-7731',isUsed:false,usedBy:null}
       ];
-      await sql\`UPDATE unisquad_state SET data=\${JSON.stringify(d)},updated_at=NOW() WHERE id=1\`;
+      await sql`UPDATE unisquad_state SET data=${JSON.stringify(d)},updated_at=NOW() WHERE id=1`;
     }
   }
 }
