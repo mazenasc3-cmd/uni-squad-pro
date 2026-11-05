@@ -83,7 +83,7 @@ module.exports = async (req, res) => {
     await init(sql);
     const path = String(req.url || '').split('?')[0];
 
-    if (req.method === 'POST' && path.endsWith('/auth')) {
+    if (req.method === 'POST' && (path.endsWith('/api') || path.endsWith('/api/'))) {
       const b = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
       if (b.action === 'login') {
         const rows = await sql`SELECT * FROM unisquad_users WHERE LOWER(username)=LOWER(${String(b.username||'').trim()}) LIMIT 1`;
