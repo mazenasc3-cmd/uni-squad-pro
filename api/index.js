@@ -33,15 +33,18 @@ async function init(sql) {
   await sql`CREATE TABLE IF NOT EXISTS unisquad_state (
     id INTEGER PRIMARY KEY, data JSONB NOT NULL, updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
   )`;
-  const admin = await sql`SELECT id FROM unisquad_users WHERE LOWER(username)='admin' LIMIT 1`;
+  const admin = await sql`SELECT id,password_hash FROM unisquad_users WHERE LOWER(username)='admin' LIMIT 1`;
+  // Temporary owner credentials for the first login. After signing in,
+  // the owner can change this password from the Admin panel; later requests
+  // do not overwrite a custom password.
+  const temporaryAdminHash = 'ebf2970545b8923d24a5a433d2a25197:27804a380161d598cdf7b0cc2a026a3fbf7927dddb8a57139900da7ccb598f42da7631e6ee075eb6a2a38bca832a450b1797d81b3d7a144ba0b8bb6691bb9257';
   if (!admin.length) {
-    // First deployment: create the original admin account so the owner can
-    // immediately sign in and then change the password from the Admin panel.
-    const initialHash = process.env.ADMIN_INITIAL_PASSWORD
-      ? hash(process.env.ADMIN_INITIAL_PASSWORD)
-      : 'a055ed5d7951df426ed06408b318bb7e:2417727aacb340e8daed310a79f67edd7fb0fabf5b1bfce9f4fd9cd5b41ed8d98da4b55b9f6ddccb962f082028351d13a7b2a279f09a7f64364c84f45dd9d621';
     await sql`INSERT INTO unisquad_users(id,name,username,password_hash,role)
-      VALUES('admin','أدمن المنصة','admin',${initialHash},'admin')`;
+      VALUES('admin','أدمن المنصة','admin',${temporaryAdminHash},'admin')`;
+  } else if (admin[0].password_hash === 'a055ed5d7951df426ed06408b318bb7e:2417727aacb340e8daed310a79f67edd7fb0fabf5b1bfce9f4fd9cd5b41ed8d98da4b55b9f6ddccb962f082028351d13a7b2a279f09a7f64364c84f45dd9d621') {
+    // Migrate the previous demo admin hash once, so existing deployments
+    // get the same temporary credentials without changing later passwords.
+    await sql`UPDATE unisquad_users SET password_hash=${temporaryAdminHash} WHERE LOWER(username)='admin'`;
   }
   const state = await sql`SELECT id FROM unisquad_state WHERE id=1`;
   if (!state.length) {
