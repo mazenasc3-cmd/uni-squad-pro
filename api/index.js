@@ -37,7 +37,7 @@ async function init(sql) {
   // Temporary owner credentials for the first login. After signing in,
   // the owner can change this password from the Admin panel; later requests
   // do not overwrite a custom password.
-  const temporaryAdminHash = 'ebf2970545b8923d24a5a433d2a25197:27804a380161d598cdf7b0cc2a026a3fbf7927dddb8a57139900da7ccb598f42da7631e6ee075eb6a2a38bca832a450b1797d81b3d7a144ba0b8bb6691bb9257';
+  const temporaryAdminHash = '0123456789abcdef0123456789abcdef:b73d71a9980ff5c0b357becdf2a10bba8841da7a1ad820ce28e15f2b8622fcdb8942397c8791c6c12807bb5afbd4a9ec855dfa0207d3e4b753a103246e03c0ee';
   if (!admin.length) {
     await sql`INSERT INTO unisquad_users(id,name,username,password_hash,role)
       VALUES('admin','أدمن المنصة','admin',${temporaryAdminHash},'admin')`;
@@ -50,11 +50,28 @@ async function init(sql) {
   if (!state.length) {
     await sql`INSERT INTO unisquad_state(id,data) VALUES(1,${JSON.stringify({
       posts: [], links: [], attendance: {}, meetings: [],
-      subCodes: [], settings: { tabs: {
+      subCodes: [
+        {code:'SQ-9981',isUsed:false,usedBy:null},
+        {code:'SQ-4412',isUsed:false,usedBy:null},
+        {code:'SQ-7731',isUsed:false,usedBy:null}
+      ], settings: { tabs: {
         feed:'الأسئلة والبوستات', links:'الروابط والمحاضرات',
         attendance:'مين النازل بكرة؟', meetings:'جلسات المذاكرة', admin:'لوحة الإشراف'
       }}
     })})`;
+  }
+  // Repair older databases that were created with an empty code list.
+  const currentState = await sql\`SELECT data FROM unisquad_state WHERE id=1\`;
+  if (currentState.length) {
+    const d = currentState[0].data || {};
+    if (!Array.isArray(d.subCodes) || d.subCodes.length === 0) {
+      d.subCodes = [
+        {code:'SQ-9981',isUsed:false,usedBy:null},
+        {code:'SQ-4412',isUsed:false,usedBy:null},
+        {code:'SQ-7731',isUsed:false,usedBy:null}
+      ];
+      await sql\`UPDATE unisquad_state SET data=\${JSON.stringify(d)},updated_at=NOW() WHERE id=1\`;
+    }
   }
 }
 
