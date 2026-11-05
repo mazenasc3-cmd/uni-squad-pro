@@ -7,7 +7,6 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-<script>tailwind.config={darkMode:'class'}</script>
 <style>
 body{font-family:'Cairo',sans-serif;background:#0f172a;color:#e2e8f0}
 .card{background:#1e293b;border:1px solid #334155;border-radius:16px}
@@ -22,73 +21,50 @@ body{font-family:'Cairo',sans-serif;background:#0f172a;color:#e2e8f0}
 .tab-btn{padding:10px 16px;border-radius:12px;font-weight:700;font-size:13px;color:#94a3b8}
 .tab-btn.active{background:#0ea5e9;color:#fff}
 .hidden{display:none!important}
+.support-btn{position:fixed;bottom:24px;left:24px;z-index:60;width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#22d3ee,#a855f7);box-shadow:0 0 18px #22d3ee,0 0 36px rgba(168,85,247,.5);display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;cursor:pointer;animation:pulse-glow 2s infinite;transition:transform .2s}
+.support-btn:hover{transform:scale(1.1)}
+@keyframes pulse-glow{0%,100%{box-shadow:0 0 14px #22d3ee,0 0 28px rgba(168,85,247,.4)}50%{box-shadow:0 0 22px #22d3ee,0 0 44px rgba(168,85,247,.7)}}
 </style>
 </head>
 <body class="min-h-screen">
 
-<!-- Toast -->
 <div id="toast" class="fixed top-4 left-4 z-50 bg-slate-800 text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 opacity-0 pointer-events-none transition-all duration-300 -translate-y-4">
   <i id="toastIcon" class="fa-solid fa-check text-green-400"></i>
   <span id="toastMsg" class="text-sm font-bold"></span>
 </div>
 
-<!-- Auth Screen -->
+<a href="https://wa.me/201062356054?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D9%85%D8%AD%D8%AA%D8%A7%D8%AC%20%D9%85%D8%B3%D8%A7%D8%B9%D8%AF%D8%A9%20%D9%81%D9%8A%20%D9%85%D9%86%D8%B5%D8%A9%20%D8%A7%D9%84%D8%B4%D9%84%D8%A9%20%D8%A7%D9%84%D8%AC%D8%A7%D9%85%D8%B9%D9%8A%D8%A9" target="_blank" class="support-btn" title="تواصل مع الدعم">
+  <i class="fa-solid fa-headset"></i>
+</a>
+
 <section id="authScreen" class="fixed inset-0 z-40 bg-slate-950 flex items-center justify-center p-4">
   <div class="card w-full max-w-md p-6">
     <div class="text-center mb-6">
-      <div class="w-14 h-14 rounded-2xl bg-sky-500 text-white flex items-center justify-center text-2xl mx-auto mb-3">
-        <i class="fa-solid fa-graduation-cap"></i>
-      </div>
+      <div class="w-14 h-14 rounded-2xl bg-sky-500 text-white flex items-center justify-center text-2xl mx-auto mb-3"><i class="fa-solid fa-graduation-cap"></i></div>
       <h1 class="text-xl font-extrabold">منصة الشلة الجامعية</h1>
       <p class="text-xs text-slate-400 mt-1">مذاكرة · محاضرات · تواصل</p>
     </div>
-
     <div class="flex gap-2 mb-5 bg-slate-900 p-1 rounded-xl">
       <button id="tabLogin" onclick="showAuth('login')" class="flex-1 tab-btn active">دخول</button>
       <button id="tabRegister" onclick="showAuth('register')" class="flex-1 tab-btn">حساب جديد</button>
     </div>
-
-    <!-- Login -->
     <form id="loginForm" onsubmit="doLogin(event)" class="space-y-3">
-      <div>
-        <label class="text-xs text-slate-400 mb-1 block">اسم المستخدم</label>
-        <input id="loginUser" class="input" required placeholder="admin">
-      </div>
-      <div>
-        <label class="text-xs text-slate-400 mb-1 block">كلمة السر</label>
-        <input id="loginPass" type="password" class="input" required placeholder="••••••••">
-      </div>
+      <div><label class="text-xs text-slate-400 mb-1 block">اسم المستخدم</label><input id="loginUser" class="input" required placeholder="admin"></div>
+      <div><label class="text-xs text-slate-400 mb-1 block">كلمة السر</label><input id="loginPass" type="password" class="input" required placeholder="••••••••"></div>
       <div id="loginError" class="error-box"></div>
       <button type="submit" class="btn w-full py-3">دخول المنصة</button>
     </form>
-
-    <!-- Register -->
     <form id="registerForm" onsubmit="doRegister(event)" class="space-y-3 hidden">
-      <div>
-        <label class="text-xs text-slate-400 mb-1 block">الاسم الثلاثي</label>
-        <input id="regName" class="input" required placeholder="أحمد محمود علي">
-      </div>
-      <div>
-        <label class="text-xs text-slate-400 mb-1 block">اسم المستخدم (إنجليزي)</label>
-        <input id="regUser" class="input" required placeholder="ahmed_ali">
-      </div>
-      <div>
-        <label class="text-xs text-slate-400 mb-1 block">كلمة السر (8 أحرف على الأقل)</label>
-        <input id="regPass" type="password" class="input" required>
-      </div>
-      <div>
-        <label class="text-xs text-slate-400 mb-1 block">كود الاشتراك</label>
-        <input id="regCode" class="input text-center font-mono tracking-widest" required placeholder="SQ-XXXX">
-      </div>
+      <div><label class="text-xs text-slate-400 mb-1 block">الاسم الثلاثي</label><input id="regName" class="input" required placeholder="أحمد محمود علي"></div>
+      <div><label class="text-xs text-slate-400 mb-1 block">اسم المستخدم (إنجليزي)</label><input id="regUser" class="input" required placeholder="ahmed_ali"></div>
+      <div><label class="text-xs text-slate-400 mb-1 block">كلمة السر (8 أحرف على الأقل)</label><input id="regPass" type="password" class="input" required></div>
       <div id="registerError" class="error-box"></div>
       <button type="submit" class="btn btn-green w-full py-3">إنشاء الحساب</button>
     </form>
   </div>
 </section>
 
-<!-- Main App -->
 <div id="mainApp" class="hidden min-h-screen flex flex-col">
-  <!-- Header -->
   <header class="sticky top-0 z-30 bg-slate-900 border-b border-slate-700">
     <div class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
       <div class="flex items-center gap-2">
@@ -110,17 +86,34 @@ body{font-family:'Cairo',sans-serif;background:#0f172a;color:#e2e8f0}
   </header>
 
   <main class="flex-1 max-w-5xl w-full mx-auto px-4 py-5 space-y-5">
-
-    <!-- Feed -->
     <section id="tab-feed" class="space-y-4">
       <div class="card p-4">
         <textarea id="postText" rows="3" class="input mb-3" placeholder="اكتب سؤالك أو منشورك هنا..."></textarea>
-        <button onclick="createPost()" class="btn px-5 py-2 text-sm"><i class="fa-solid fa-paper-plane ml-1"></i> نشر</button>
+        <div id="mediaPreview" class="hidden mb-3 space-y-2">
+          <div id="imgBox" class="hidden relative inline-block">
+            <img id="imgPreview" class="max-h-40 rounded-xl border border-slate-600">
+            <button onclick="clearImage()" class="absolute -top-2 -left-2 w-6 h-6 bg-red-500 text-white rounded-full text-xs flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <div id="audioBox" class="hidden flex items-center gap-3 bg-slate-900 p-3 rounded-xl">
+            <i class="fa-solid fa-microphone text-purple-400"></i>
+            <audio id="audioPreview" controls class="flex-1 h-8"></audio>
+            <button onclick="clearAudio()" class="w-6 h-6 bg-red-500 text-white rounded-full text-xs flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <label class="cursor-pointer px-3 py-2 rounded-xl bg-sky-900/50 border border-sky-700 text-sky-300 text-xs font-bold flex items-center gap-1.5">
+            <i class="fa-solid fa-image"></i> صورة
+            <input type="file" id="imageInput" accept="image/*" class="hidden" onchange="handleImage(event)">
+          </label>
+          <button type="button" id="recordBtn" onclick="toggleRecord()" class="px-3 py-2 rounded-xl bg-purple-900/50 border border-purple-700 text-purple-300 text-xs font-bold flex items-center gap-1.5">
+            <i class="fa-solid fa-circle" id="recordIcon"></i> <span id="recordLabel">تسجيل</span>
+          </button>
+          <button onclick="createPost()" class="btn px-5 py-2 text-sm mr-auto"><i class="fa-solid fa-paper-plane ml-1"></i> نشر</button>
+        </div>
       </div>
       <div id="postsList" class="space-y-3"></div>
     </section>
 
-    <!-- Links -->
     <section id="tab-links" class="hidden space-y-4">
       <div class="flex justify-between items-center">
         <h2 class="font-extrabold">مكتبة الروابط</h2>
@@ -129,7 +122,6 @@ body{font-family:'Cairo',sans-serif;background:#0f172a;color:#e2e8f0}
       <div id="linksList" class="grid sm:grid-cols-2 gap-3"></div>
     </section>
 
-    <!-- Attendance -->
     <section id="tab-attendance" class="hidden">
       <div class="card p-5 text-center max-w-md mx-auto">
         <h2 class="font-extrabold text-lg mb-1">مين نازل بكرة؟</h2>
@@ -143,7 +135,6 @@ body{font-family:'Cairo',sans-serif;background:#0f172a;color:#e2e8f0}
       </div>
     </section>
 
-    <!-- Meetings -->
     <section id="tab-meetings" class="hidden space-y-4">
       <div class="flex justify-between items-center">
         <h2 class="font-extrabold">جلسات المذاكرة</h2>
@@ -152,13 +143,7 @@ body{font-family:'Cairo',sans-serif;background:#0f172a;color:#e2e8f0}
       <div id="meetingsList" class="space-y-3"></div>
     </section>
 
-    <!-- Admin -->
     <section id="tab-admin" class="hidden space-y-5">
-      <div class="card p-4">
-        <h3 class="font-bold mb-3 text-sky-400"><i class="fa-solid fa-key ml-1"></i> أكواد الاشتراك</h3>
-        <button onclick="generateCode()" class="btn px-4 py-2 text-xs mb-3">توليد كود جديد</button>
-        <div id="codesList" class="space-y-2 text-sm"></div>
-      </div>
       <div class="card p-4">
         <h3 class="font-bold mb-3 text-pink-400"><i class="fa-solid fa-users ml-1"></i> الأعضاء</h3>
         <div id="usersList" class="space-y-2 text-sm"></div>
@@ -174,7 +159,6 @@ body{font-family:'Cairo',sans-serif;background:#0f172a;color:#e2e8f0}
   </main>
 </div>
 
-<!-- Add Link Modal -->
 <div id="linkModal" class="fixed inset-0 z-50 bg-black/70 hidden items-center justify-center p-4">
   <div class="card w-full max-w-sm p-5 space-y-3">
     <h3 class="font-bold">إضافة رابط</h3>
@@ -187,7 +171,6 @@ body{font-family:'Cairo',sans-serif;background:#0f172a;color:#e2e8f0}
   </div>
 </div>
 
-<!-- Add Meeting Modal -->
 <div id="meetingModal" class="fixed inset-0 z-50 bg-black/70 hidden items-center justify-center p-4">
   <div class="card w-full max-w-sm p-5 space-y-3">
     <h3 class="font-bold">جلسة مذاكرة جديدة</h3>
@@ -202,296 +185,39 @@ body{font-family:'Cairo',sans-serif;background:#0f172a;color:#e2e8f0}
 </div>
 
 <script>
-const API = '/api';
-let token = localStorage.getItem('sq_token') || '';
-let currentUser = null;
-let data = { posts:[], links:[], attendance:{}, meetings:[], subCodes:[], users:[] };
-
-function toast(msg, type='ok') {
-  const t = document.getElementById('toast');
-  document.getElementById('toastMsg').textContent = msg;
-  document.getElementById('toastIcon').className = type==='err' ? 'fa-solid fa-xmark text-red-400' : 'fa-solid fa-check text-green-400';
-  t.classList.remove('opacity-0','-translate-y-4','pointer-events-none');
-  setTimeout(() => t.classList.add('opacity-0','-translate-y-4','pointer-events-none'), 3000);
-}
-
-function showError(id, msg) {
-  const el = document.getElementById(id);
-  el.textContent = msg;
-  el.classList.add('show');
-}
-function clearError(id) {
-  const el = document.getElementById(id);
-  el.textContent = '';
-  el.classList.remove('show');
-}
-
-async function api(action, payload={}) {
-  const headers = {'Content-Type':'application/json'};
-  if (token) headers['Authorization'] = 'Bearer ' + token;
-  const res = await fetch(API, { method:'POST', headers, body: JSON.stringify({action, ...payload}) });
-  const out = await res.json().catch(() => ({}));
-  if (!res.ok || !out.ok) throw new Error(out.error || 'حدث خطأ في الاتصال بالخادم');
-  if (out.token) { token = out.token; localStorage.setItem('sq_token', token); }
-  if (out.data) data = out.data;
-  if (out.user) currentUser = out.user;
-  return out;
-}
-
-function showAuth(tab) {
-  document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
-  document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
-  document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
-  document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
-  clearError('loginError'); clearError('registerError');
-}
-
-async function doLogin(e) {
-  e.preventDefault();
-  clearError('loginError');
-  try {
-    await api('login', {
-      username: document.getElementById('loginUser').value.trim(),
-      password: document.getElementById('loginPass').value
-    });
-    enterApp();
-    toast('أهلاً بيك يا ' + currentUser.name);
-  } catch (err) {
-    showError('loginError', err.message);
-  }
-}
-
-async function doRegister(e) {
-  e.preventDefault();
-  clearError('registerError');
-  try {
-    await api('register', {
-      fullName: document.getElementById('regName').value.trim(),
-      username: document.getElementById('regUser').value.trim().toLowerCase(),
-      password: document.getElementById('regPass').value,
-      code: document.getElementById('regCode').value.trim().toUpperCase()
-    });
-    enterApp();
-    toast('تم إنشاء حسابك بنجاح');
-  } catch (err) {
-    showError('registerError', err.message);
-  }
-}
-
-function enterApp() {
-  document.getElementById('authScreen').classList.add('hidden');
-  document.getElementById('mainApp').classList.remove('hidden');
-  document.getElementById('navName').textContent = currentUser.name;
-  if (currentUser.role === 'admin') document.getElementById('nav-admin').classList.remove('hidden');
-  renderAll();
-}
-
-function logout() {
-  token = ''; localStorage.removeItem('sq_token');
-  location.reload();
-}
-
-function switchTab(name) {
-  ['feed','links','attendance','meetings','admin'].forEach(t => {
-    document.getElementById('tab-'+t).classList.toggle('hidden', t !== name);
-    document.getElementById('nav-'+t)?.classList.toggle('active', t === name);
-  });
-}
-
-function renderAll() {
-  renderPosts(); renderLinks(); renderAttendance(); renderMeetings();
-  if (currentUser?.role === 'admin') { renderCodes(); renderUsers(); }
-}
-
-function renderPosts() {
-  const list = document.getElementById('postsList');
-  if (!data.posts?.length) { list.innerHTML = '<p class="text-center text-slate-500 text-sm py-8">مفيش منشورات لسه</p>'; return; }
-  list.innerHTML = data.posts.map(p => `
-    <div class="card p-4">
-      <div class="flex justify-between items-start mb-2">
-        <div class="font-bold text-sm">${p.author || p.username}</div>
-        <div class="text-xs text-slate-500">${p.time || ''}</div>
-      </div>
-      <p class="text-sm leading-relaxed mb-3">${p.text || ''}</p>
-      <div class="space-y-2" id="comments-${p.id}">
-        ${(p.comments||[]).map(c => `<div class="text-xs bg-slate-900 rounded-lg px-3 py-2"><b>${c.author}:</b> ${c.text}</div>`).join('')}
-      </div>
-      <div class="flex gap-2 mt-3">
-        <input id="cmt-${p.id}" class="input text-xs py-2" placeholder="اكتب تعليق...">
-        <button onclick="addComment('${p.id}')" class="btn px-3 py-2 text-xs">رد</button>
-      </div>
-    </div>
-  `).join('');
-}
-
-async function createPost() {
-  const text = document.getElementById('postText').value.trim();
-  if (!text) return toast('اكتب حاجة الأول', 'err');
-  try {
-    await api('create_post', { text });
-    document.getElementById('postText').value = '';
-    renderPosts();
-    toast('تم النشر');
-  } catch (e) { toast(e.message, 'err'); }
-}
-
-async function addComment(postId) {
-  const input = document.getElementById('cmt-'+postId);
-  const text = input.value.trim();
-  if (!text) return;
-  try {
-    await api('add_comment', { postId, text });
-    input.value = '';
-    renderPosts();
-  } catch (e) { toast(e.message, 'err'); }
-}
-
-function renderLinks() {
-  const list = document.getElementById('linksList');
-  if (!data.links?.length) { list.innerHTML = '<p class="text-center text-slate-500 text-sm py-6 col-span-2">مفيش روابط</p>'; return; }
-  list.innerHTML = data.links.map(l => `
-    <a href="${l.url}" target="_blank" class="card p-4 hover:border-sky-500 transition block">
-      <div class="font-bold text-sm mb-1">${l.title}</div>
-      <div class="text-xs text-slate-400 truncate">${l.url}</div>
-      <div class="text-xs text-slate-500 mt-2">${l.author || ''}</div>
-    </a>
-  `).join('');
-}
-
-function openAddLink() { document.getElementById('linkModal').classList.remove('hidden'); document.getElementById('linkModal').classList.add('flex'); }
-function openAddMeeting() { document.getElementById('meetingModal').classList.remove('hidden'); document.getElementById('meetingModal').classList.add('flex'); }
-function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
-
-async function addLink() {
-  const title = document.getElementById('linkTitle').value.trim();
-  const url = document.getElementById('linkUrl').value.trim();
-  if (!title || !url) return toast('املأ كل الحقول', 'err');
-  try {
-    await api('create_link', { title, url });
-    closeModal('linkModal');
-    document.getElementById('linkTitle').value = '';
-    document.getElementById('linkUrl').value = '';
-    renderLinks();
-    toast('تم إضافة الرابط');
-  } catch (e) { toast(e.message, 'err'); }
-}
-
-function renderAttendance() {
-  const list = document.getElementById('attendanceList');
-  const att = data.attendance || {};
-  const labels = { attending:'🟢 نازل', maybe:'🟡 احتمال', absent:'🔴 مش نازل' };
-  const entries = Object.entries(att);
-  if (!entries.length) { list.innerHTML = '<p class="text-slate-500">لسه محدش سجّل</p>'; return; }
-  list.innerHTML = entries.map(([user, status]) => `<div class="flex justify-between py-1 border-b border-slate-700"><span>${user}</span><span>${labels[status]||status}</span></div>`).join('');
-}
-
-async function vote(status) {
-  try {
-    await api('vote_attendance', { status });
-    renderAttendance();
-    toast('تم تسجيل موقفك');
-  } catch (e) { toast(e.message, 'err'); }
-}
-
-function renderMeetings() {
-  const list = document.getElementById('meetingsList');
-  if (!data.meetings?.length) { list.innerHTML = '<p class="text-center text-slate-500 text-sm py-6">مفيش جلسات</p>'; return; }
-  list.innerHTML = data.meetings.map(m => `
-    <div class="card p-4 flex justify-between items-center">
-      <div>
-        <div class="font-bold text-sm">${m.title}</div>
-        <div class="text-xs text-slate-400">${m.time || ''} · ${m.author || ''}</div>
-      </div>
-      ${m.url ? `<a href="${m.url}" target="_blank" class="btn px-3 py-1.5 text-xs">انضم</a>` : ''}
-    </div>
-  `).join('');
-}
-
-async function addMeeting() {
-  const title = document.getElementById('meetTitle').value.trim();
-  const time = document.getElementById('meetTime').value;
-  const url = document.getElementById('meetUrl').value.trim();
-  if (!title) return toast('اكتب عنوان الجلسة', 'err');
-  try {
-    await api('create_meeting', { title, time, url });
-    closeModal('meetingModal');
-    renderMeetings();
-    toast('تم إضافة الجلسة');
-  } catch (e) { toast(e.message, 'err'); }
-}
-
-function renderCodes() {
-  const list = document.getElementById('codesList');
-  const codes = data.subCodes || [];
-  list.innerHTML = codes.map(c => `
-    <div class="flex justify-between items-center bg-slate-900 rounded-lg px-3 py-2">
-      <span class="font-mono font-bold ${c.isUsed ? 'text-slate-500 line-through' : 'text-sky-400'}">${c.code}</span>
-      <span class="text-xs">${c.isUsed ? 'مستخدم بواسطة '+c.usedBy : 'متاح'}</span>
-    </div>
-  `).join('') || '<p class="text-slate-500 text-xs">مفيش أكواد</p>';
-}
-
-async function generateCode() {
-  try {
-    await api('generate_code');
-    renderCodes();
-    toast('تم توليد كود جديد');
-  } catch (e) { toast(e.message, 'err'); }
-}
-
-function renderUsers() {
-  const list = document.getElementById('usersList');
-  const users = data.users || [];
-  list.innerHTML = users.map(u => `
-    <div class="flex justify-between items-center bg-slate-900 rounded-lg px-3 py-2">
-      <div>
-        <span class="font-bold">${u.name}</span>
-        <span class="text-xs text-slate-400"> @${u.username}</span>
-        ${u.role==='admin' ? '<span class="text-xs text-pink-400 mr-1">أدمن</span>' : ''}
-      </div>
-      <div class="flex gap-1">
-        ${u.role!=='admin' ? `<button onclick="banUser('${u.id}')" class="text-xs text-red-400 px-2">حظر</button>` : ''}
-      </div>
-    </div>
-  `).join('') || '<p class="text-slate-500 text-xs">مفيش أعضاء</p>';
-}
-
-async function banUser(id) {
-  if (!confirm('حظر العضو لمدة يوم؟')) return;
-  try {
-    await api('ban_user', { userId: id, days: 1, reason: 'مخالفة' });
-    renderUsers();
-    toast('تم الحظر');
-  } catch (e) { toast(e.message, 'err'); }
-}
-
-async function changeAdminPass() {
-  const pass = document.getElementById('newAdminPass').value;
-  if (pass.length < 8) return toast('كلمة السر لازم 8 أحرف على الأقل', 'err');
-  try {
-    await api('change_admin_password', { password: pass });
-    document.getElementById('newAdminPass').value = '';
-    toast('تم تغيير كلمة السر');
-  } catch (e) { toast(e.message, 'err'); }
-}
-
-// Auto login if token exists
-(async () => {
-  if (!token) return;
-  try {
-    const res = await fetch(API, { headers: { Authorization: 'Bearer ' + token } });
-    const out = await res.json();
-    if (out.ok) {
-      currentUser = out.user;
-      data = out.data || data;
-      enterApp();
-    } else {
-      token = ''; localStorage.removeItem('sq_token');
-    }
-  } catch (_) {
-    token = ''; localStorage.removeItem('sq_token');
-  }
-})();
+const API='/api';let token=localStorage.getItem('sq_token')||'';let currentUser=null;let data={posts:[],links:[],attendance:{},meetings:[],users:[]};let pendingImage=null,pendingAudio=null;let mediaRecorder=null,recordedChunks=[],isRecording=false;
+function toast(msg,type='ok'){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;document.getElementById('toastIcon').className=type==='err'?'fa-solid fa-xmark text-red-400':'fa-solid fa-check text-green-400';t.classList.remove('opacity-0','-translate-y-4','pointer-events-none');setTimeout(()=>t.classList.add('opacity-0','-translate-y-4','pointer-events-none'),3000)}
+function showError(id,msg){const el=document.getElementById(id);el.textContent=msg;el.classList.add('show')}
+function clearError(id){const el=document.getElementById(id);el.textContent='';el.classList.remove('show')}
+async function api(action,payload={}){const headers={'Content-Type':'application/json'};if(token)headers['Authorization']='Bearer '+token;const res=await fetch(API,{method:'POST',headers,body:JSON.stringify({action,...payload})});const out=await res.json().catch(()=>({}));if(!res.ok||!out.ok)throw new Error(out.error||'حدث خطأ في الاتصال بالخادم');if(out.token){token=out.token;localStorage.setItem('sq_token',token)}if(out.data)data=out.data;if(out.user)currentUser=out.user;return out}
+function showAuth(tab){document.getElementById('loginForm').classList.toggle('hidden',tab!=='login');document.getElementById('registerForm').classList.toggle('hidden',tab!=='register');document.getElementById('tabLogin').classList.toggle('active',tab==='login');document.getElementById('tabRegister').classList.toggle('active',tab==='register');clearError('loginError');clearError('registerError')}
+async function doLogin(e){e.preventDefault();clearError('loginError');try{await api('login',{username:document.getElementById('loginUser').value.trim(),password:document.getElementById('loginPass').value});enterApp();toast('أهلاً بيك يا '+currentUser.name)}catch(err){showError('loginError',err.message)}}
+async function doRegister(e){e.preventDefault();clearError('registerError');try{await api('register',{fullName:document.getElementById('regName').value.trim(),username:document.getElementById('regUser').value.trim().toLowerCase(),password:document.getElementById('regPass').value});enterApp();toast('تم إنشاء حسابك بنجاح')}catch(err){showError('registerError',err.message)}}
+function enterApp(){document.getElementById('authScreen').classList.add('hidden');document.getElementById('mainApp').classList.remove('hidden');document.getElementById('navName').textContent=currentUser.name;if(currentUser.role==='admin')document.getElementById('nav-admin').classList.remove('hidden');renderAll()}
+function logout(){token='';localStorage.removeItem('sq_token');location.reload()}
+function switchTab(name){['feed','links','attendance','meetings','admin'].forEach(t=>{document.getElementById('tab-'+t).classList.toggle('hidden',t!==name);document.getElementById('nav-'+t)?.classList.toggle('active',t===name)})}
+function renderAll(){renderPosts();renderLinks();renderAttendance();renderMeetings();if(currentUser?.role==='admin')renderUsers()}
+function handleImage(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>{pendingImage=ev.target.result;document.getElementById('imgPreview').src=pendingImage;document.getElementById('imgBox').classList.remove('hidden');document.getElementById('mediaPreview').classList.remove('hidden')};reader.readAsDataURL(file)}
+function clearImage(){pendingImage=null;document.getElementById('imageInput').value='';document.getElementById('imgBox').classList.add('hidden');if(!pendingAudio)document.getElementById('mediaPreview').classList.add('hidden')}
+function clearAudio(){pendingAudio=null;document.getElementById('audioPreview').src='';document.getElementById('audioBox').classList.add('hidden');if(!pendingImage)document.getElementById('mediaPreview').classList.add('hidden');if(isRecording)stopRecord()}
+async function toggleRecord(){if(isRecording){stopRecord();return}try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});recordedChunks=[];mediaRecorder=new MediaRecorder(stream);mediaRecorder.ondataavailable=e=>{if(e.data.size>0)recordedChunks.push(e.data)};mediaRecorder.onstop=()=>{const blob=new Blob(recordedChunks,{type:'audio/webm'});const reader=new FileReader();reader.onload=ev=>{pendingAudio=ev.target.result;document.getElementById('audioPreview').src=pendingAudio;document.getElementById('audioBox').classList.remove('hidden');document.getElementById('mediaPreview').classList.remove('hidden');toast('تم تسجيل الصوت')};reader.readAsDataURL(blob);stream.getTracks().forEach(t=>t.stop())};mediaRecorder.start();isRecording=true;document.getElementById('recordIcon').className='fa-solid fa-stop';document.getElementById('recordLabel').textContent='إيقاف';document.getElementById('recordBtn').classList.add('bg-red-900/50','border-red-600','text-red-300')}catch(err){toast('لازم تسمح باستخدام الميكروفون','err')}}
+function stopRecord(){if(mediaRecorder&&isRecording){mediaRecorder.stop();isRecording=false;document.getElementById('recordIcon').className='fa-solid fa-circle';document.getElementById('recordLabel').textContent='تسجيل';document.getElementById('recordBtn').classList.remove('bg-red-900/50','border-red-600','text-red-300')}}
+function renderPosts(){const list=document.getElementById('postsList');if(!data.posts?.length){list.innerHTML='<p class="text-center text-slate-500 text-sm py-8">مفيش منشورات لسه</p>';return}list.innerHTML=data.posts.map(p=>`<div class="card p-4"><div class="flex justify-between items-start mb-2"><div class="font-bold text-sm">${p.author||p.username}</div><div class="text-xs text-slate-500">${p.time||''}</div></div><p class="text-sm leading-relaxed mb-3">${p.text||''}</p>${p.image?`<img src="${p.image}" class="max-h-60 rounded-xl mb-3 border border-slate-600">`:''}${p.audio?`<audio src="${p.audio}" controls class="w-full mb-3 h-10"></audio>`:''}<div class="space-y-2">${(p.comments||[]).map(c=>`<div class="text-xs bg-slate-900 rounded-lg px-3 py-2"><b>${c.author}:</b> ${c.text}</div>`).join('')}</div><div class="flex gap-2 mt-3"><input id="cmt-${p.id}" class="input text-xs py-2" placeholder="اكتب تعليق..."><button onclick="addComment('${p.id}')" class="btn px-3 py-2 text-xs">رد</button></div></div>`).join('')}
+async function createPost(){const text=document.getElementById('postText').value.trim();if(!text&&!pendingImage&&!pendingAudio)return toast('اكتب حاجة أو أضف صورة/ريكورد','err');try{await api('create_post',{text,image:pendingImage,audio:pendingAudio});document.getElementById('postText').value='';clearImage();clearAudio();renderPosts();toast('تم النشر')}catch(e){toast(e.message,'err')}}
+async function addComment(postId){const input=document.getElementById('cmt-'+postId);const text=input.value.trim();if(!text)return;try{await api('add_comment',{postId,text});input.value='';renderPosts()}catch(e){toast(e.message,'err')}}
+function renderLinks(){const list=document.getElementById('linksList');if(!data.links?.length){list.innerHTML='<p class="text-center text-slate-500 text-sm py-6 col-span-2">مفيش روابط</p>';return}list.innerHTML=data.links.map(l=>`<a href="${l.url}" target="_blank" class="card p-4 hover:border-sky-500 transition block"><div class="font-bold text-sm mb-1">${l.title}</div><div class="text-xs text-slate-400 truncate">${l.url}</div><div class="text-xs text-slate-500 mt-2">${l.author||''}</div></a>`).join('')}
+function openAddLink(){document.getElementById('linkModal').classList.remove('hidden');document.getElementById('linkModal').classList.add('flex')}
+function openAddMeeting(){document.getElementById('meetingModal').classList.remove('hidden');document.getElementById('meetingModal').classList.add('flex')}
+function closeModal(id){document.getElementById(id).classList.add('hidden');document.getElementById(id).classList.remove('flex')}
+async function addLink(){const title=document.getElementById('linkTitle').value.trim();const url=document.getElementById('linkUrl').value.trim();if(!title||!url)return toast('املأ كل الحقول','err');try{await api('create_link',{title,url});closeModal('linkModal');document.getElementById('linkTitle').value='';document.getElementById('linkUrl').value='';renderLinks();toast('تم إضافة الرابط')}catch(e){toast(e.message,'err')}}
+function renderAttendance(){const list=document.getElementById('attendanceList');const att=data.attendance||{};const labels={attending:'🟢 نازل',maybe:'🟡 احتمال',absent:'🔴 مش نازل'};const entries=Object.entries(att);if(!entries.length){list.innerHTML='<p class="text-slate-500">لسه محدش سجّل</p>';return}list.innerHTML=entries.map(([user,status])=>`<div class="flex justify-between py-1 border-b border-slate-700"><span>${user}</span><span>${labels[status]||status}</span></div>`).join('')}
+async function vote(status){try{await api('vote_attendance',{status});renderAttendance();toast('تم تسجيل موقفك')}catch(e){toast(e.message,'err')}}
+function renderMeetings(){const list=document.getElementById('meetingsList');if(!data.meetings?.length){list.innerHTML='<p class="text-center text-slate-500 text-sm py-6">مفيش جلسات</p>';return}list.innerHTML=data.meetings.map(m=>`<div class="card p-4 flex justify-between items-center"><div><div class="font-bold text-sm">${m.title}</div><div class="text-xs text-slate-400">${m.time||''} · ${m.author||''}</div></div>${m.url?`<a href="${m.url}" target="_blank" class="btn px-3 py-1.5 text-xs">انضم</a>`:''}</div>`).join('')}
+async function addMeeting(){const title=document.getElementById('meetTitle').value.trim();const time=document.getElementById('meetTime').value;const url=document.getElementById('meetUrl').value.trim();if(!title)return toast('اكتب عنوان الجلسة','err');try{await api('create_meeting',{title,time,url});closeModal('meetingModal');renderMeetings();toast('تم إضافة الجلسة')}catch(e){toast(e.message,'err')}}
+function renderUsers(){const list=document.getElementById('usersList');const users=data.users||[];list.innerHTML=users.map(u=>`<div class="flex justify-between items-center bg-slate-900 rounded-lg px-3 py-2"><div><span class="font-bold">${u.name}</span><span class="text-xs text-slate-400"> @${u.username}</span>${u.role==='admin'?'<span class="text-xs text-pink-400 mr-1">أدمن</span>':''}</div>${u.role!=='admin'?`<button onclick="banUser('${u.id}')" class="text-xs text-red-400 px-2">حظر</button>`:''}</div>`).join('')||'<p class="text-slate-500 text-xs">مفيش أعضاء</p>'}
+async function banUser(id){if(!confirm('حظر العضو لمدة يوم؟'))return;try{await api('ban_user',{userId:id,days:1,reason:'مخالفة'});renderUsers();toast('تم الحظر')}catch(e){toast(e.message,'err')}}
+async function changeAdminPass(){const pass=document.getElementById('newAdminPass').value;if(pass.length<8)return toast('كلمة السر لازم 8 أحرف على الأقل','err');try{await api('change_admin_password',{password:pass});document.getElementById('newAdminPass').value='';toast('تم تغيير كلمة السر')}catch(e){toast(e.message,'err')}}
+(async()=>{if(!token)return;try{const res=await fetch(API,{headers:{Authorization:'Bearer '+token}});const out=await res.json();if(out.ok){currentUser=out.user;data=out.data||data;enterApp()}else{token='';localStorage.removeItem('sq_token')}}catch(_){token='';localStorage.removeItem('sq_token')}})();
 </script>
 </body>
 </html>
