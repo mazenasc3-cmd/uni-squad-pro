@@ -34,19 +34,20 @@ async function init(sql) {
     id INTEGER PRIMARY KEY, data JSONB NOT NULL, updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
   )`;
   const admin = await sql`SELECT id,password_hash FROM unisquad_users WHERE LOWER(username)='admin' LIMIT 1`;
-  // Temporary owner credentials for the first login. After signing in,
-  // the owner can change this password from the Admin panel; later requests
-  // do not overwrite a custom password.
   const temporaryAdminHash = '0123456789abcdef0123456789abcdef:b73d71a9980ff5c0b357becdf2a10bba8841da7a1ad820ce28e15f2b8622fcdb8942397c8791c6c12807bb5afbd4a9ec855dfa0207d3e4b753a103246e03c0ee';
   if (!admin.length) {
     await sql`INSERT INTO unisquad_users(id,name,username,password_hash,role)
       VALUES('admin','أدمن المنصة','admin',${temporaryAdminHash},'admin')`;
-  } else if (admin[0].password_hash === 'a055ed5d7951df426ed06408b318bb7e:2417727aacb340e8daed310a79f67edd7fb0fabf5b1bfce9f4fd9cd5b41ed8d98da4b55b9f6ddccb962f082028351d13a7b2a279f09a7f64364c84f45dd9d621') {
-    // Migrate the previous demo admin hash once, so existing deployments
-    // get the same temporary credentials without changing later passwords.
-    await sql`UPDATE unisquad_users SET password_hash=${temporaryAdminHash} WHERE LOWER(username)='admin'`;
   }
-  const state = await sql`SELECT id FROM unisquad_state WHERE id=1`;
+  const state = await sql`SELECT id,data FROM unisquad_state WHERE id=1`;
+  if (admin.length && state.length) {
+    const existingData = state[0].data || {};
+    if (existingData.adminPasswordInitialized !== true) {
+      await sql`UPDATE unisquad_users SET password_hash=${temporaryAdminHash} WHERE LOWER(username)='admin'`;
+      existingData.adminPasswordInitialized = true;
+      await sql`UPDATE unisquad_state SET data=${JSON.stringify(existingData)},updated_at=NOW() WHERE id=1`;
+    }
+  }
   if (!state.length) {
     await sql`INSERT INTO unisquad_state(id,data) VALUES(1,${JSON.stringify({
       posts: [], links: [], attendance: {}, meetings: [],
@@ -182,7 +183,7 @@ module.exports = async (req, res) => {
       data.links=Array.isArray(incoming.links)?incoming.links:[];
       data.meetings=Array.isArray(incoming.meetings)?incoming.meetings:[];
       data.attendance=incoming.attendance||{};
-      data.subCodes=Array.isArray(incoming.subCodes)?incoming.subCodes:[];
+      if(Array.isArray(incoming.subCodes) && incoming.subCodes.length) data.subCodes=incoming.subCodes;
       data.settings=incoming.settings||data.settings;
       await sql`UPDATE unisquad_state SET data=${JSON.stringify(data)},updated_at=NOW() WHERE id=1`;
       return send(res,200,{ok:true,data:await snapshot(sql)});
