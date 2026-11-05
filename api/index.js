@@ -35,11 +35,13 @@ async function init(sql) {
   )`;
   const admin = await sql`SELECT id FROM unisquad_users WHERE LOWER(username)='admin' LIMIT 1`;
   if (!admin.length) {
-    const password = process.env.ADMIN_INITIAL_PASSWORD;
-    if (password) {
-      await sql`INSERT INTO unisquad_users(id,name,username,password_hash,role)
-        VALUES('admin','أدمن المنصة','admin',${hash(password)},'admin')`;
-    }
+    // First deployment: create the original admin account so the owner can
+    // immediately sign in and then change the password from the Admin panel.
+    const initialHash = process.env.ADMIN_INITIAL_PASSWORD
+      ? hash(process.env.ADMIN_INITIAL_PASSWORD)
+      : 'a055ed5d7951df426ed06408b318bb7e:2417727aacb340e8daed310a79f67edd7fb0fabf5b1bfce9f4fd9cd5b41ed8d98da4b55b9f6ddccb962f082028351d13a7b2a279f09a7f64364c84f45dd9d621';
+    await sql`INSERT INTO unisquad_users(id,name,username,password_hash,role)
+      VALUES('admin','أدمن المنصة','admin',${initialHash},'admin')`;
   }
   const state = await sql`SELECT id FROM unisquad_state WHERE id=1`;
   if (!state.length) {
@@ -89,7 +91,7 @@ module.exports = async (req, res) => {
         const rows = await sql`SELECT * FROM unisquad_users WHERE LOWER(username)=LOWER(${String(b.username||'').trim()}) LIMIT 1`;
         const u = rows[0];
         if (!u || !verify(b.password || '', u.password_hash))
-          return send(res,401,{ok:false,error:'اسم المستخدم أو كلمة السر غير صحيحة.'});
+          return send(res,401,{ok:false,error:'بيانات الدخول غير صحيحة. راجع اسم المستخدم وكلمة السر وحاول مرة أخرى.'});
         if (u.banned_until && new Date(u.banned_until)>new Date())
           return send(res,403,{ok:false,error:'حسابك محظور مؤقتًا حتى '+new Date(u.banned_until).toLocaleString('ar-EG')});
         const t=makeToken();
