@@ -1,0 +1,9 @@
+{
+  "name": "unisquad-pro",
+  "version": "2.1.0",
+  "private": true,
+  "description": "منصة الشلة الجامعية - UniSquad Pro",
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.2"
+  }
+}
